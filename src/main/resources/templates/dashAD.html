@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeBilhetes - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4e73df;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --dark: #5a5c69;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8f9fc;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary) 0%, #224abe 100%);
+            min-height: 100vh;
+        }
+        .sidebar-brand {
+            height: 4.375rem;
+            width: 60px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 800;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            letter-spacing: 0.05rem;
+            z-index: 1;
+            color: white;
+        }
+        .nav-item {
+            position: relative;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+        .nav-link:hover {
+            color: white;
+        }
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+        .nav-link.active {
+            color: white;
+        }
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+            font-weight: 600;
+        }
+        .stat-card {
+            border-left: 0.25rem solid;
+            border-radius: 0.35rem;
+        }
+        .stat-card.primary {
+            border-left-color: var(--primary);
+        }
+        .stat-card.success {
+            border-left-color: var(--success);
+        }
+        .stat-card.info {
+            border-left-color: var(--info);
+        }
+        .stat-card.warning {
+            border-left-color: var(--warning);
+        }
+        .stat-text {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .stat-number {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        .content-header {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e3e6f0;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar px-0">
+            <div class="sidebar-brand">VeBilhetes Admin</div>
+            <div class="px-3">
+                <div class="nav flex-column">
+					<a th:href="@{/dashAD}" class="nav-link active">
+				    <i class="bi bi-speedometer2"></i>Dashboard
+					</a>
+					<a th:href="@{/usuarios/admin/gestao-eventos}" class="nav-link">
+					<i class="bi bi-calendar-event"></i> Eventos
+					</a>
+					<a th:href="@{/usuarios/admin/gestao-utilizadores}" class="nav-link">
+					<i class="bi bi-people"></i> Utilizadores
+					</a>
+					<a th:href="@{/usuarios/admin/relatorios}" class="nav-link">
+					<i class="bi bi-bar-chart-line"></i> Relatórios
+					</a>
+					<a th:href="@{/usuarios/admin/configuracoes}" class="nav-link">
+					<i class="bi bi-gear"></i> Configurações
+					</a>
+					<a th:href="@{/usuarios/logout}" class="nav-link">
+					<i class="bi bi-box-arrow-right"></i> Sair
+					</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-4 px-4">
+            <div class="content-header mb-4">
+                <h1 class="h3 mb-0">Dashboard</h1>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card primary h-100">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="stat-text">Eventos Ativos</div>
+                                    <div class="stat-number" th:text="${totalEventos}">24</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-calendar-check fs-2 text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card success h-100">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="stat-text">Vendas Hoje</div>
+                                    <div class="stat-number" th:text="${vendasHoje}">156</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-currency-dollar fs-2 text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card info h-100">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="stat-text">Utilizadores</div>
+                                    <div class="stat-number" th:text="${totalUsuarios}">1248</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-people fs-2 text-info"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card warning h-100">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="stat-text">Pendentes</div>
+                                    <div class="stat-number" th:text="${pendentes}">8</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-exclamation-triangle fs-2 text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold"><i class="bi bi-clock-history me-2"></i>Atividade Recente</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <div>
+                                <i class="bi bi-calendar-plus text-primary me-2"></i>
+                                <span>Novo evento "Festival de Verão" criado</span>
+                            </div>
+                            <small class="text-muted">15 minutos atrás</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <div>
+                                <i class="bi bi-credit-card text-success me-2"></i>
+                                <span>Venda realizada para evento "Concerto Jazz"</span>
+                            </div>
+                            <small class="text-muted">1 hora atrás</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <div>
+                                <i class="bi bi-person-plus text-info me-2"></i>
+                                <span>Novo promotor registado: "Arena Shows"</span>
+                            </div>
+                            <small class="text-muted">3 horas atrás</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>VeBilhetes - Cadastro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .card {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .card-header {
+      font-weight: bold;
+      background-color: #f8f9fa;
+    }
+    .btn-primary {
+      background-color: #0d6efd;
+    }
+    .alert {
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="card">
+          <div class="card-header">Cadastro</div>
+          <div class="card-body">
+            <form th:action="@{/usuarios/cadastro}" method="post" th:object="${usuario}">
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Nome completo" th:field="*{nome}" required>
+              </div>
+              <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Email" th:field="*{email}" required>
+              </div>
+              <div class="mb-3">
+                <input type="password" class="form-control" placeholder="Senha" th:field="*{senha}" required>
+              </div>
+              <div class="mb-3">
+                <input type="tel" class="form-control" placeholder="Número de telefone" th:field="*{telefone}" required>
+              </div>
+              <div class="mb-3">
+                <input type="date" class="form-control" placeholder="Data de nascimento" th:field="*{dataNascimento}" required>
+              </div>
+              <div class="mb-3">
+                <select class="form-select" th:field="*{tipoUsuario}" required onchange="mostrarAlerta()">
+                  <option value="" disabled selected>Tipo de usuário</option>
+                  <option value="ESPECTADOR">Espectador</option>
+                  <option value="PROMOTOR">Promotor</option>
+                </select>
+              </div>
+              <!-- Alerta para Promotor -->
+              <div id="alerta-promotor" class="alert alert-warning">
+                <strong>Atenção:</strong> Sua conta será analisada e aprovada por um administrador.
+              </div>
+              <button type="submit" class="btn btn-primary w-100">CADASTRAR</button>
+            </form>
+
+            <div class="mt-2 text-center">
+              <small>Já tem uma conta? <a th:href="@{/usuarios/login}">Entrar</a></small>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Função para mostrar/ocultar alerta dependendo do tipo de usuário selecionado
+    function mostrarAlerta() {
+      var tipoUsuario = document.querySelector("select[name='tipoUsuario']").value;
+      var alertaPromotor = document.getElementById('alerta-promotor');
+      
+      if (tipoUsuario === 'PROMOTOR') {
+        alertaPromotor.style.display = 'block';
+      } else {
+        alertaPromotor.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

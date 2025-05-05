@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeBilhetes - Pesquisar Eventos</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    .card {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .card-header {
+      font-weight: bold;
+      background-color: #f8f9fa;
+    }
+    .btn-primary {
+      background-color: #0d6efd;
+    }
+    .evento-card {
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .evento-card:hover {
+      transform: translateY(-5px);
+    }
+    .category-btn.active {
+      background-color: #0d6efd;
+      color: white;
+    }
+    .no-events {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Pesquisar Eventos</h2>
+      <div>
+        <a href="historico-compras.html" class="btn btn-outline-primary">Minhas Compras</a>
+        <a href="login.html" class="btn btn-outline-secondary ms-2">Sair</a>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar eventos">
+            </div>
+            
+            <div class="d-flex gap-2 mb-3" id="categoryFilters">
+              <button class="btn btn-outline-secondary btn-sm category-btn active" data-category="all">Todos</button>
+              <button class="btn btn-outline-secondary btn-sm category-btn" data-category="Música">Concertos</button>
+              <button class="btn btn-outline-secondary btn-sm category-btn" data-category="Esportes">Desporto</button>
+              <button class="btn btn-outline-secondary btn-sm category-btn" data-category="Teatro">Teatro</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row" id="eventsContainer">
+      <!-- Os eventos serão carregados dinamicamente aqui -->
+      <div class="no-events">
+        <i class="bi bi-hourglass-split fs-1"></i>
+        <p>Carregando eventos...</p>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- ... (parte superior do HTML permanece igual) ... -->
+  <script>
+    // Elementos do DOM
+    const eventsContainer = document.getElementById('eventsContainer');
+    const searchInput = document.getElementById('searchInput');
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    
+    // Filtros ativos
+    let activeCategory = 'all';
+    let searchTerm = '';
+    let allEvents = [];
+
+    // Função renderEvents melhorada
+    function renderEvents(eventos) {
+      const filteredEvents = eventos.filter(event => {
+        const matchesCategory = activeCategory === 'all' || 
+                               (event.categoria && event.categoria === activeCategory);
+        const matchesSearch = !searchTerm || 
+                             (event.titulo && event.titulo.toLowerCase().includes(searchTerm.toLowerCase())) || 
+                             (event.local && event.local.toLowerCase().includes(searchTerm.toLowerCase()));
+        return matchesCategory && matchesSearch;
+      });
+
+      eventsContainer.innerHTML = '';
+
+      if (filteredEvents.length === 0) {
+        eventsContainer.innerHTML = `
+          <div class="col-12">
+            <div class="no-events">
+              <i class="bi bi-search fs-1"></i>
+              <p>Nenhum evento encontrado</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      filteredEvents.forEach(event => {
+        const eventCard = document.createElement('div');
+        eventCard.className = 'col-md-4';
+
+        const title = event.titulo || 'Sem título';
+        const date = event.dataInicio || 'Data não disponível';
+        const location = event.local || 'Local não disponível';
+        const price = event.preco ? `MT ${event.preco.toFixed(2)}` : 'Preço não disponível';
+		function getIconForCategory(categoria) {
+		  switch ((categoria || '').toLowerCase()) {
+		    case 'música':
+		    case 'concertos':
+		      return 'music-note-beamed';
+		    case 'esportes':
+		    case 'desporto':
+		      return 'trophy';
+		    case 'teatro':
+		      return 'ticket-perforated';
+		    default:
+		      return 'calendar-event';
+		  }
+		}
+
+		const icon = getIconForCategory(event.categoria);
+		const iconColor = 'primary'; // ou defina cores diferentes se quiser
+		const detailsUrl = `/eventos/detalhes-eventos?id=${event.idEvento}`;
+
+        eventCard.innerHTML = `
+          <div class="card evento-card mb-4" onclick="window.location.href='${detailsUrl}'">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <i class="bi bi-${icon} fs-1 text-${iconColor}"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <h5 class="mb-1">${title}</h5>
+                  <div><i class="bi bi-calendar-event"></i> ${date}</div>
+                  <div><i class="bi bi-geo-alt"></i> ${location}</div>
+                  <div class="text-end mt-2">
+                    <span class="fw-bold">${price}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        eventsContainer.appendChild(eventCard);
+      });
+    }
+
+    // Função fetchEvents melhorada com tratamento de erros
+    async function fetchEvents() {
+      try {
+        eventsContainer.innerHTML = `
+          <div class="col-12">
+            <div class="no-events">
+              <i class="bi bi-hourglass-split fs-1"></i>
+              <p>Carregando eventos...</p>
+            </div>
+          </div>
+        `;
+
+        const response = await fetch(`/eventos/api/events?t=${new Date().getTime()}`);
+        if (!response.ok) {
+          throw new Error(`Erro ${response.status}: ${response.statusText}`);
+        }
+
+        const eventos = await response.json();
+        console.log('Eventos carregados:', eventos);
+
+        if (!Array.isArray(eventos)) {
+          throw new Error('Resposta inválida: os eventos não são um array');
+        }
+
+        allEvents = eventos;
+        renderEvents(eventos);
+      } catch (error) {
+        console.error('Erro ao carregar eventos:', error);
+        eventsContainer.innerHTML = `
+          <div class="col-12">
+            <div class="no-events">
+              <i class="bi bi-exclamation-circle fs-1"></i>
+              <p>Não foi possível carregar os eventos: ${error.message}</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Event listeners para filtros
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        activeCategory = button.dataset.category;
+        renderEvents(allEvents);
+      });
+    });
+
+    // Event listener para busca
+    searchInput.addEventListener('input', () => {
+      searchTerm = searchInput.value.trim();
+      renderEvents(allEvents);
+    });
+
+    // Carrega os eventos inicialmente
+    fetchEvents();
+  </script>
+
+</body>
+</html>
